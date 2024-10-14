@@ -1,5 +1,6 @@
 node_modules/
 .env
+.idea
 db.sqlite3
 tailwind.config.js
 local-cdn/
