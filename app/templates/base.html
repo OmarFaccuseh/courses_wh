@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+{% load static %}
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>basee</title>
+    <link rel="stylesheet" href="{% static 'css_output/output.css' %}" />
+</head>
+<body class="h-screen">
+    {% include 'navbar.html' %}
+
+    {% block content %}
+    {% endblock %}
+</body>
+</html>

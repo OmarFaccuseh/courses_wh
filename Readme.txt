@@ -1,0 +1,1 @@
+add local-cdn to gitignore   :  local-cdn/
