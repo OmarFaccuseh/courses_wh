@@ -6,11 +6,17 @@
     <meta charset="UTF-8">
     <title>basee</title>
     <link rel="stylesheet" href="{% static 'css_output/output.css' %}" />
+    <script src="https://unpkg.com/htmx.org@1.4.1"></script>
 </head>
 <body class="h-screen">
     {% include 'navbar.html' %}
 
     {% block content %}
+    {% endblock %}
+
+    <!-- For JS -->
+    {% block extra_js %}
+        
     {% endblock %}
 </body>
 </html>

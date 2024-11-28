@@ -1,0 +1,86 @@
+{# Override allauth login #}
+
+{% extends "account/base_entrance.html" %}
+{% load i18n %}
+{% load allauth account %}
+{% load static %}
+
+{% block extra_head %}
+    {{ block.super }}  
+    <link rel="stylesheet" href="{% static 'css_output/output.css' %}">
+{% endblock extra_head %}
+
+{% block head_title %}
+    {% trans "Sign In" %}
+{% endblock head_title %}
+
+{% block content %}
+    <div class='container w-1/2 bg-green-50 m-auto flex flex-col p-[150px] py-7'>
+    {% element h1 %}
+        <div class='text-center text-2xl font-semibold'>
+        {% trans "Sign In" %}
+        </div
+    {% endelement %}
+    {% if not SOCIALACCOUNT_ONLY %}
+        {% setvar link %}
+            <a href="{{ signup_url }}">
+            {% endsetvar %}
+            {% setvar end_link %}
+            </a>
+        {% endsetvar %}
+        {% element p %}
+            <div class='text-center text-gray-500 m-4'>
+            {% blocktranslate %}or {{ link }}sign up{{ end_link }} {% endblocktranslate %}
+            </div>
+        {% endelement %}
+        {% url 'account_login' as login_url %}
+        <div class='form-access'>
+        {% element form form=form method="post" action=login_url tags="entrance,login" %}
+            {% slot body %}
+                {% csrf_token %}
+                {% element fields form=form unlabeled=True %}
+                {% endelement %}
+                {{ redirect_field }}
+            {% endslot %}
+            {% slot actions %}
+                {% element button type="submit" tags="prominent,login" %}
+                    {% trans "Sign In" %}
+                {% endelement %}
+            {% endslot %}
+        {% endelement %}
+        </div>
+    {% endif %}
+    {% if LOGIN_BY_CODE_ENABLED or PASSKEY_LOGIN_ENABLED %}
+        {% element hr %}
+        {% endelement %}
+        {% element button_group vertical=True %}
+            {% if PASSKEY_LOGIN_ENABLED %}
+                {% element button type="submit" form="mfa_login" id="passkey_login" tags="prominent,login,outline,primary" %}
+                    {% trans "Sign in with a passkey" %}
+                {% endelement %}
+            {% endif %}
+            {% if LOGIN_BY_CODE_ENABLED %}
+                {% element button href=request_login_code_url tags="prominent,login,outline,primary" %}
+                    {% trans "Mail me a sign-in code" %}
+                {% endelement %}
+            {% endif %}
+        {% endelement %}
+    {% endif %}
+    {% if SOCIALACCOUNT_ENABLED %}
+        <hr class="h-[2px] bg-gray-300">
+        <div class="link-to-g-login">
+        <h3> Or use your Google account</h3>
+        <a href="/accounts/google/login/?process=login/"><img src="{% static 'img/logingoogle.jpg' %}" alt="Google login"/></a>    
+        {# {% include "socialaccount/snippets/login.html" with page_layout="entrance" %}             CAUTION: OVERRIDE! #}
+        </div>
+    {% endif %}
+
+    </div>
+{% endblock content %}
+{% block extra_body %}
+    {{ block.super }}
+    {% if PASSKEY_LOGIN_ENABLED %}
+        {% include "mfa/webauthn/snippets/login_script.html" with button_id="passkey_login" %}      
+    {% endif %}
+{% endblock %}
+/accounts/google/login/?process=login

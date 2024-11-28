@@ -1,0 +1,17 @@
+{% load static %}
+
+<a class='course' data-tags='{{course.tags}}' 
+                  data-calificacion='{{course.calificacion}}''
+                  data-tipo='{{course.tipo}}'
+                  data-categoria='{{course.categoria}}'
+                  href="{{ course.get_absolute_url }}">
+    {% if course.imagen %}
+        <img class="rounded" src="{{ course.get_image_build_course_sm }}" />
+    {% else %}
+        <img class="rounded" src="{% static 'img/image_not_found.jpg' %}" width="300" />
+    {% endif %}
+
+    <span class="text-base">
+        {{course.name}}
+    </span>
+</a>

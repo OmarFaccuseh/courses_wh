@@ -1,17 +1,112 @@
 {% extends 'base.html' %}
-
+{% load static %}
 {% block content %}
 
-<div>
-    <h1>
-        Courses
-    </h1>
-    <div>
-        {% for course in courses %}
-            <a >{{course.name}}</a>
-        {% endfor %}
+<div class="flex w-[80%] mx-auto mt-16">
+    <!-- Left bar, filters -->
+    <div class="flex flex-col w-1/4 bg-gray-200 m-4 p-4 gap-4 shadow-solid">
+        <span class='text-lg'>Filtros</span>
 
+        <div class="flex flex-col">
+            <h2>Tags:</h2>
+            <label><input type="checkbox" class='filtro' value="java">  Java  </label>
+            <label><input type="checkbox" class='filtro' value="python"> Python </label>
+            <label><input type="checkbox" class='filtro' value="go"> Go </label>
+        </div>
+        <hr class="border-t-2 border-gray-300 ">
+        <div class="flex flex-col">
+            <h2>Puntuacion:</h2>
+            <label><input type="checkbox" class='filtro_cal' value="cero"> 0 </label>
+            <label><input type="checkbox" class='filtro_cal' value="uno"> 1 </label>
+            <label><input type="checkbox" class='filtro_cal' value="dos"> 2 </label>
+            <label><input type="checkbox" class='filtro_cal' value="tres"> 3 </label>
+            <label><input type="checkbox" class='filtro_cal' value="cuatro"> 4 </label>
+            <label><input type="checkbox" class='filtro_cal' value="cinco"> 5 </label>
+        </div>
+        <hr class="border-t-2 border-gray-300 ">
+        <div class="flex flex-col">
+            <h2>Tipo:</h2>
+            <label><input type="checkbox" class='filtro_tipo' value="snack"> Snack </label>
+            <label><input type="checkbox" class='filtro_tipo' value="curso"> Curso </label>
+        </div>
+        <hr class="border-t-2 border-gray-300">
+        <div class="flex flex-col">
+            <h2>Lado:</h2>
+            <label><input type="checkbox" class='filtro_cat' value="backend"> Backend </label>
+            <label><input type="checkbox" class='filtro_cat' value="frontend"> Frontend </label>
+        </div>
+    </div>
+
+    <!-- Main area -->
+    <div class="w-3/4 ml-4">
+        <h1 class="text-2xl my-5 border-l-4 border-green-500 p-2">
+            Cursos
+        </h1>
+        <div id='cursos_list' class="grid grid-cols-3 gap-2">
+            {% for course in courses %}
+                {% include 'partials/course_partial.html' %}
+            {% empty %}
+        <p style="text-align: center;"> No se encontraron Cursos </p>
+            {% endfor %}
+        </div>
     </div>
 </div>
+
+{% endblock %}
+
+
+{% block extra_js %}
+    {{ block.super }}
+    <script>
+        // For filter courses, not ajax, only display or not
+        document.addEventListener("DOMContentLoaded", function () {
+
+            // Reset all
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            checkboxes.forEach(checkbox => (checkbox.checked = false));
+
+            const cursos = document.querySelectorAll(".course");
+            const checkboxes_tags = document.querySelectorAll(".filtro");
+            const checkboxes_cals = document.querySelectorAll(".filtro_cal");
+            const checkboxes_tipos = document.querySelectorAll(".filtro_tipo");
+            const checkboxes_cats = document.querySelectorAll(".filtro_cat");
+
+            const filtrar = () => {
+                const tagsChecked = Array.from(checkboxes_tags).filter(checkbox => checkbox.checked).map(checkbox => checkbox.value);
+                const calsChecked = Array.from(checkboxes_cals).filter(checkbox => checkbox.checked).map(checkbox => checkbox.value);
+                const tiposChecked = Array.from(checkboxes_tipos).filter(checkbox => checkbox.checked).map(checkbox => checkbox.value);
+                const catsChecked = Array.from(checkboxes_cats).filter(checkbox => checkbox.checked).map(checkbox => checkbox.value);
+
+                console.log('cals: ', calsChecked)
+
+                cursos.forEach(curso => {
+
+                    const cursoTags = (curso.dataset.tags || "").split(',').map(c => c.trim());
+                    const someTagsMatch = tagsChecked.some(value => cursoTags.includes(value));
+                    const tagsOk = someTagsMatch || tagsChecked.length === 0 ;
+
+                    const cursoCal = curso.dataset.calificacion;
+                    const calMatch = calsChecked.some(value => cursoCal === value);
+                    const calOk = calMatch || calsChecked.length === 0 ;
+
+                    const cursoTipo = curso.dataset.tipo;
+                    const tipoMatch = tiposChecked.some(value => cursoTipo === value);
+                    const tipoOk = tipoMatch || tiposChecked.length === 0 ;
+
+                    const cursoCat = curso.dataset.categoria;
+                    const catMatch = catsChecked.some(value => cursoCat === value);
+                    const catOk = catMatch || catsChecked.length === 0 ;
+
+                    (tagsOk && calOk && tipoOk && catOk) ? (curso.style.display = "block") :  (curso.style.display = "none")
+                })      
+            }
+
+            checkboxes_tags.forEach(checkbox => checkbox.addEventListener('change', filtrar));
+            checkboxes_cals.forEach(checkbox => checkbox.addEventListener('change', filtrar));
+            checkboxes_tipos.forEach(checkbox => checkbox.addEventListener('change', filtrar));
+            checkboxes_cats.forEach(checkbox => checkbox.addEventListener('change', filtrar));
+
+        });
+    </script>
 
 {% endblock %}

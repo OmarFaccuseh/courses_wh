@@ -1,0 +1,47 @@
+{% extends 'base.html'%}
+{% load static %}
+
+{% block content %}
+
+<div class="flex flex-1 w-3/4 mx-auto m-4 m-8 mt-16 pt-4">
+    <!-- Left menu -->
+    <div class="w-1/4 min-h-full me-4 p-4 bg-gray-200 shadow-solid">
+        <button hx-get="{% url 'mis-cursos' %}" hx-trigger="click" hx-swap="innerHTML" hx-target="#main"  class="block py-2" >  
+            Cursos  
+        </button>
+        <a hx-get="{% url 'mis-notas' %}" hx-trigger="click" hx-swap="innerHTML" hx-target="#main" class="block py-2"  > 
+            Notas  
+        </a>
+        <a hx-get="{% url 'mis-preferencias' %}" hx-trigger="click" hx-swap="innerHTML" hx-target="#main" class="block py-2" > 
+            Preferencias  
+        </a>
+
+    </div>
+
+    <!-- Right area-->
+    <div class="w-3/4 ">
+        <div id='main'>
+            {% include 'tablero/partials/cursos_tablero.html' %}
+        </div>
+    </div>
+
+</div>
+
+
+{% endblock %}
+
+{% block extra_js %}
+    {{ block.super }}
+    <script>
+       
+        function resaltarSubmenu(clickedLink) {
+            const links = document.querySelectorAll('.flex a');
+            links.forEach(link => {
+                link.classList.remove('active');  
+            });
+            console.log('in')
+            clickedLink.classList.add('active');
+        }
+    </script>
+
+{% endblock %}

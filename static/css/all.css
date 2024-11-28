@@ -2,6 +2,37 @@
 @tailwind components;
 @tailwind utilities;
 
-h1{
-    color: green;
+
+/* override logins*/
+.form-access form {
+    margin-bottom: 15px;
+    display: flex;
+    flex-direction: column;
 }
+
+.form-access p {
+    margin: 10px;
+}
+.form-access button {
+    margin: 10px auto;
+    padding: 6px 15px;
+    background-color: green;
+    color: white;
+    align-self: center;
+}
+
+.link-to-g-login{
+    margin: 20px;
+    margin-top: 30px;
+    text-align: center;
+}
+
+.link-to-g-login img{
+    margin: 15px auto;
+    width: 200px;
+}
+
+.active{
+    background-color: red;
+}
+

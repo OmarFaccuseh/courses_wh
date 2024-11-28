@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+<!-- Tema -->
+<div class="flex flex-1 w-3/4 mx-auto m-8 mt-20">
+    <div class="w-1/4 min-h-full me-4 p-4 bg-gray-200 shadow-solid">
+        <p class=""> Subtemas </p>
+        <hr class="border-t-2 border-gray-300 my-2">
+        {% for t in temas %}
+            <a href="{{ t.get_absolute_url }}" class="block p-2 {% if t.id == tema.id %} bg-gradient-to-r from-white via-gray {% endif %}" >
+                {{ t.name }}
+            </a>
+        {% endfor %}
+    </div>
+
+    <div class="w-3/4 ">
+        <p class="p-3 text-2xl bg-gradient-to-r from-gray-200 via-white">
+            {{ tema.name }}
+        </p>
+        <hr class="border-t-2 border-gray-300 my-4">
+        <p class="p-1 text-xl"> {{ tema.contenido }} </p>
+    </div>
+
+</div>
+
+{% endblock %}
