@@ -6,6 +6,8 @@ name = "pypi"
 [packages]
 django = "*"
 cloudinary = "*"
+django-htmx = "*"
+
 
 [dev-packages]
 
