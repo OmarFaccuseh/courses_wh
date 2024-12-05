@@ -28,10 +28,10 @@ if os.path.isfile(dotenv_file):
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-nb$3xpa*c5l((@c_b_qv81)a(=!0vmv9dz9=kj&65c7*24qu!m'
+SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['courses-wh.onrender.com', '127.0.0.1', 'aws-0-us-west-1.pooler.supabase.com']
 
