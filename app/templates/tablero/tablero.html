@@ -3,16 +3,17 @@
 
 {% block content %}
 
-<div class="flex flex-1 w-3/4 mx-auto m-4 m-8 mt-16 pt-4">
+<!-- Usa ajax (htmx) para cambiar seccion con el leftBar-->
+<div class="flex flex-1 w-3/4 mx-auto m-4 m-8 mt-16 pt-4" id='menu' data-default={{section}}>
     <!-- Left menu -->
     <div class="w-1/4 min-h-full me-4 p-4 bg-gray-200 shadow-solid">
-        <button hx-get="{% url 'mis-cursos' %}" hx-trigger="click" hx-swap="innerHTML" hx-target="#main"  class="block py-2" >  
+        <button id='crusos' hx-get="{% url 'app:mis-cursos' %}" hx-trigger="click" hx-swap="innerHTML" hx-target="#main"  class="block py-2" >  
             Cursos  
         </button>
-        <a hx-get="{% url 'mis-notas' %}" hx-trigger="click" hx-swap="innerHTML" hx-target="#main" class="block py-2"  > 
+        <a id='notas' hx-get="{% url 'app:mis-notas' %}" hx-trigger="click" hx-swap="innerHTML" hx-target="#main" class="block py-2"  > 
             Notas  
         </a>
-        <a hx-get="{% url 'mis-preferencias' %}" hx-trigger="click" hx-swap="innerHTML" hx-target="#main" class="block py-2" > 
+        <a id='preferencias' hx-get="{% url 'app:mis-preferencias' %}" hx-trigger="click" hx-swap="innerHTML" hx-target="#main" class="block py-2" > 
             Preferencias  
         </a>
 
@@ -24,16 +25,35 @@
             {% include 'tablero/partials/cursos_tablero.html' %}
         </div>
     </div>
-
 </div>
 
-
 {% endblock %}
+
 
 {% block extra_js %}
     {{ block.super }}
     <script>
+
+        // Despues de guardar notas ejecuta accion para cargar section notas en main (htmx)
+        document.addEventListener('DOMContentLoaded', function() {
+            var section = document.getElementById('menu').getAttribute('data-default');  
+            if (section == 'cursos') {
+                document.getElementById('cursos').click();
+            } else if (section == 'notas') {
+                document.getElementById('notas').click();
+            } else if (section == 'preferencias') {
+                document.getElementById('preferencias').click();
+            }
+        });
        
+        /*
+        document.addEventListener("htmx:afterSwap", (event) => {
+            if (event.target.id === "crusos") {
+                console.log("Contenido cargado y colocado en el DOM");
+                // Aquí puedes ejecutar tu código JS
+                alert("¡Nuevo contenido cargado!");
+            }
+        });
         function resaltarSubmenu(clickedLink) {
             const links = document.querySelectorAll('.flex a');
             links.forEach(link => {
@@ -41,7 +61,7 @@
             });
             console.log('in')
             clickedLink.classList.add('active');
-        }
+        }*/
     </script>
 
 {% endblock %}
