@@ -6,7 +6,7 @@ import os
 from pathlib import Path
 import dotenv
 import dj_database_url
-from decouple import Config, RepositoryEnv
+from decouple import config, Config, RepositoryEnv
 
 
 
@@ -26,7 +26,7 @@ if os.path.isfile(dotenv_file):
 SECRET_KEY = os.getenv('SECRET_KEY')
 
 # STRIPE
-config = Config(RepositoryEnv(BASE_DIR / ".env"))
+# config = Config(RepositoryEnv(BASE_DIR / ".env"))
 STRIPE_SECRET_KEY = config('STRIPE_SECRET_KEY')
 
 
