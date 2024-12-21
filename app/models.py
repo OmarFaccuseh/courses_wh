@@ -6,6 +6,14 @@ helpers.cloudinary_init()
 from django.urls import reverse
 from django.dispatch import receiver
 from django.db.models.signals import post_save
+from django.utils import timezone
+from code_warehouse.conf import get_settings
+import stripe
+
+
+settings = get_settings()
+stripe.api_key = settings.STRIPE_SECRET_KEY
+
 
 # # #  Utilities  # # #
 
@@ -62,8 +70,8 @@ class Nota(models.Model):
     fecha_creacion = models.DateTimeField(auto_now_add=True) 
 
     def __str__(self):
-        return f"Nota de {self.perfil.user.username}: {self.contenido[:20]}..."  # Muestra un resumen de la nota
-
+        return f"Nota de {self.perfil.user.username}: {self.contenido[:20]}..."  
+    
 
 class Curso(models.Model):
     name = models.CharField(max_length=250)
@@ -74,6 +82,12 @@ class Curso(models.Model):
     tipo = models.CharField(choices=Tipo.choices, default=Tipo.CURSO)
     calificacion = models.CharField(choices=Calificacion.choices, default=Calificacion.CERO)
 
+    stripe_product_id = models.CharField(max_length=220, blank=True, null=True)
+    stripe_price_id = models.CharField(max_length=220, blank=True, null=True)
+    stripe_price = models.IntegerField(default=999)  # 100 * price
+    previous_stripe_price = models.IntegerField(default=999)  # 100 * price
+    price_changed_timestamp = models.DateTimeField(auto_now=False, auto_now_add=False, blank=True, null=True )
+
     @property
     def cant_temas(self):
         return self.tema_set.count()
@@ -82,7 +96,7 @@ class Curso(models.Model):
         return self.name
 
     def get_absolute_url(self):
-        return reverse('curso', args=[self.id])
+        return reverse('app:curso', args=[self.id])
 
     def get_image_build_course_sm(self):
         return get_image_build(self, width=350)
@@ -92,8 +106,28 @@ class Curso(models.Model):
 
     def get_tags(self):
         return self.tags.split(',') if self.tags else []
+    
+    def save(self, *args, **kwargs):
+        # stripe name products cant edit
+        if not self.stripe_product_id:
+            if self.name:
+                stripe_product = stripe.Product.create(name=self.name) 
+                self.stripe_product_id = stripe_product.id
+        if not self.stripe_price_id or self.stripe_price != self.previous_stripe_price:
+            if self.stripe_price != self.previous_stripe_price:
+                self.previous_stripe_price = self.stripe_price
+                self.price_changed_timestamp = timezone.now()
+            stripe_price_obj = stripe.Price.create(
+                product=self.stripe_product_id,
+                unit_amount=self.stripe_price,
+                currency="mxn",
+            )
+            self.stripe_price_id = stripe_price_obj.id
+       
 
-
+        super().save(*args, **kwargs)
+    
+    
 class Tema(models.Model):
     curso = models.ForeignKey(Curso, on_delete=models.CASCADE)
     name = models.CharField(max_length=250, null=False, blank=False)
@@ -102,7 +136,7 @@ class Tema(models.Model):
     contenido = models.TextField(max_length=100000)
 
     def get_absolute_url(self):
-        return reverse('tema', args=[self.id])
+        return reverse('app:tema', args=[self.id])
 
 
 # # #  Signals  # # #

@@ -7,7 +7,11 @@
             <a href="{{ curso.get_absolute_url }}" class="block">{{ curso.name }}</a>
             <span class="text-sm text-gray-500"> Avance del curso: [pendiente]</span>
         </div>
-        <button class="text-white bg-gray-700 py-2 px-4 rounded hover:bg-gray-500 h-10 ml-auto"> Desuscribir </button>
+        <form method='post' action="{% url 'app:desuscribir' %}" class='ml-auto'>
+            {% csrf_token %}
+            <input type='hidden' name='curso_id' value='{{curso.id}}'> 
+            <button class="text-white bg-gray-700 py-2 px-4 rounded hover:bg-gray-500 h-10"> Desuscribir </button>
+        </form>
     </div>
 {% empty %}
     <p class="p-1 text-xl">Aun no te has suscrito a ningun curo</p>

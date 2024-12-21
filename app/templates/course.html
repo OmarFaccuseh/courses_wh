@@ -16,23 +16,32 @@
             {{curso.descripcion}}
         </p>
         <div class="mt-auto mb-6">
-            <p class="text-3xl m-3 text-sm">
+            <p class="m-3 text-sm">
                 Lecciones: {{curso.cant_temas}}
             </p>
-            <p class="text-3xl m-3 text-sm">
+            <p class="m-3 text-sm">
                 tags:
                 {% for tag in curso.get_tags %}
                 <span class="bg-green-300 text-white px-2 py-1 mx-1 rounded-full text-sm"> {{ tag }} </span>
                 {% endfor %}
             </p>
         </div>
-        <button id='suscribir' class="bg-semidark text-white px-6 pt-1 pb-2 mx-1 mt-auto rounded text-base w-[fit-content] h-[fit-content]">
-            {% if suscrito %}
+        {% if not request.user.is_authenticated %}
+            <a href="{% url 'account_login' %} " id='suscribir' class="bg-semidark text-white px-6 pt-1 pb-2 mx-1 mt-auto rounded text-base w-[fit-content] h-[fit-content]">
+                Login now to purchase
+            </a>
+        {% elif suscrito %}
+            <button id='suscribir' class="bg-semidark text-white px-6 pt-1 pb-2 mx-1 mt-auto rounded text-base w-[fit-content] h-[fit-content]">
                 Suscrito
-            {% else %}
-                Suscribirse
-            {% endif %}
-        </button>
+            </button> 
+        {% else %}
+            <form method="POST" action="{% url 'purchase:init_purchase' product_id=curso.id %}" > {% csrf_token %}
+                <input type="hidden" value="{{ curso.id }}" name="curso_id" />
+                <button type='submit' id='suscribir' class="bg-semidark text-white px-6 pt-1 pb-2 mx-1 mt-auto rounded text-base w-[fit-content] h-[fit-content]">
+                    Comprar curso
+                </button>
+            </form>
+        {% endif %}
     </div>
     <div class="w-1/2 mx-auto ">
         {% if curso.imagen %}
@@ -45,7 +54,7 @@
 </div>
 
 <!-- Lista temas-->
-<div class="flex w-3/4 mx-auto m-4 flex-col m-8 ">
+<div class="flex w-3/4 mx-auto flex-col m-8 ">
     <p class="p-3 text-2xl bg-gradient-to-r from-gray-200 via-white">
         Secciones
     </p>
@@ -80,38 +89,5 @@
         {{ logueado|json_script:"logueado" }}
     </script>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', ()=>{
-            const cursoData = document.getElementById('curso');
-            const logueado = cursoData.getAttribute('data-loguado');
-
-            const popup = document.getElementById("mypopup");
-            const closePopup = document.getElementById("closepopup");
-
-            let btn = document.getElementById('suscribir')
-            btn.onclick = () => {
-                if (logueado){
-                    fetch('{% url "suscribir" %}?curso_id='+encodeURIComponent('{{curso.id}}'))
-                    .then(res => res.json())
-                    .then(data => {
-                        console.log('data rec: ', data)
-                        if(data.ok){
-                            btn.innerHTML = 'Suscrito'
-                        }
-
-                    })
-                }
-                else {
-                   popup.classList.remove("hidden");
-                }
-            }
-
-            // Close popup
-            closePopup.addEventListener("click", () => {
-                popup.classList.add("hidden");
-            });
-            
-        })
-    </script>
 
 {% endblock %}
